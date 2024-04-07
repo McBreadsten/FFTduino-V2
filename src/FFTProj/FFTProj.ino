@@ -16,7 +16,6 @@ struct complex wLookup[(NUM_OF_BINS / 2)];
 
 uint8_t delayUs;  //sampling frequency delay, in microseconds
 struct complex samples[NUM_OF_BINS];
-void fft(struct complex *samples, const int size);
 
 //calculates the sum of two complex numbers
 struct complex cSum(struct complex c1, struct complex c2) {
@@ -58,10 +57,9 @@ void shuffle(uint8_t n, int offset) {
   }
 }
 
-void radix2fft(){
-
+void radix2fft() {
   fftSub(NUM_OF_BINS, 0);
-  for(int i = 0; i < NUM_OF_BINS; i++){
+  for (int i = 0; i < NUM_OF_BINS; i++) {
     samples[i].r = samples[i].r / ((double)NUM_OF_BINS * 2.0);
     samples[i].i = samples[i].i / ((double)NUM_OF_BINS * 2.0);
   }
@@ -69,8 +67,30 @@ void radix2fft(){
   samples[0].i = samples[0].i / 2.0;
   //should be able to have the proper samples in the array
 }
-//TODO: finish recursive FFT function
-void fftSub
+void fftSub(int n, int offset) {
+  uint8_t m;
+  struct complex omega;
+  struct complex tempComplexX;
+  struct complex tempComplexY;
+  if (n > 1) {
+    m = n / 2;
+    shuffle(n, offset);
+    fftSub(m, offset);
+    fftSub(m, offset + m);
+    int lookupPos;
+    for (uint8_t i = offset; i < offset + m; i++) {
+      //access W values from lookup table
+      lookupPos = (i - offset) * NUM_OF_BINS / n;
+      omega.i = wLookup[lookupPos].i;
+      omega.r = wLookup[lookupPos].r;
+
+      tempComplexX = cProd(samples[i + m], omega);
+      tempComplexY = samples[i];
+      samples[i] = cSum(samples[i], tempComplexX);
+      samples[i + m] = cDiff(tempComplexY, tempComplexX);
+    }
+  }
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -97,6 +117,8 @@ void loop() {
     samples[i].i = 0;
     delayMicroseconds(delayUs);  //needed delay in order to sample at correct sampling frequency
   }
-  //TODO: calculate the radix-2 fft
-  //ok so we have a list of samples... hmmmmm
+  radix2fft();
+  //ok now we have the FFT in the samples array, now what?
+  //TODO: test the fft.
+  delay(1);
 }
