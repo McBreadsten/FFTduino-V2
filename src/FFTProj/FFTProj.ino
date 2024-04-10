@@ -2,11 +2,15 @@
 #include "Arduino.h"
 #include "Math.h"
 //Goal: perform a Radix-2 DIF FFT.
-#define SAMPLING_FREQ 5000  //max frequency: 10Khz
-#define NUM_OF_BINS 1024    //max num of bins (theoretically) 4,096, should be a power of two
+#define SAMPLING_FREQ 1000  //max frequency: 10Khz
+#define NUM_OF_BINS 512    //max num of bins (theoretically) 4,096, should be a power of two
 #define INPUT_PIN A0        //must be an analog pin, check ATMEGA2560 datasheet for best pin
-#define PI 3.14159265359    //easier float rep of pi, easier on the atmega
-
+#define AGS true            //auto generate sinewave, for testing
+#if AGS                     //checks if AGS is true
+  #define AMP 50            //amplitude, is a percentage of 100
+  #define MIDLINE 512       //middle of the sinewave, normally 512
+  #define FREQ 1000         //frequency of the sinewave
+#endif 
 struct complex {  //used for complex numbers
   float r;
   float i;
@@ -107,15 +111,43 @@ void setup() {
     wLookup[i].r = cos(2.0 * PI * (float)(i) / (float)(NUM_OF_BINS));
     wLookup[i].i = sin(2.0 * PI * (float)(i) / (float)(NUM_OF_BINS));
   }
+  if(AGS){ //generate a sinewave with phase, frequency, and midline defined
+    //we have a sampling frequency, and we have a requested phase
+    //if the frequency of the sinewave matched the sampling frequency, we would get only
+    //samples at the start of every cycle. if it was half the sampling frequency, it would be half of a cycle.
+    //first, we determine the ratio between the artificial frequency and the sampling frequency.
+    double sampleRatio = (double)FREQ / (double) SAMPLING_FREQ;
+    double sampleFreq = 2 * PI * sampleRatio; //incrementation amount (in rad)
+    double incCount = 0;
+    double maxAmpPercentage = (double)AMP / 100;
+    bool isClip = false;
+    for(int i = 0; i < NUM_OF_BINS; i++){
+      if(incCount >= (2 * PI))
+        incCount -= (2 * PI);
+      
+      samples[i].r = sin(incCount) * 512 * maxAmpPercentage;
+      samples[i].r += MIDLINE;
+      samples[i].i = 0;
+      if(samples[i].r < 0)
+        isClip = true;
+      incCount += sampleFreq;
+
+    }
+    if(isClip)
+      Serial.println("Clipping detected! results may be skewed.");
+  }
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   // sample the input signal
-  for (uint8_t i = 0; i < NUM_OF_BINS; i++) {
-    samples[i].r = analogRead(INPUT_PIN);
-    samples[i].i = 0;
-    delayMicroseconds(delayUs);  //needed delay in order to sample at correct sampling frequency
+  bool isAGS = AGS;
+  if(!isAGS){
+    for (uint8_t i = 0; i < NUM_OF_BINS; i++) {
+      samples[i].r = analogRead(INPUT_PIN);
+      samples[i].i = 0;
+      delayMicroseconds(delayUs);  //needed delay in order to sample at correct sampling frequency
+    }
   }
   radix2fft();
   //ok now we have the FFT in the samples array, now what?
