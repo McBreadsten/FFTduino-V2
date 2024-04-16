@@ -1,67 +1,76 @@
-#include "Complex.h"
+#include "KwikComplex.h"
 //#include <stdlib.h>
-#define NUM_OF_BINS 256
+#define NUM_OF_BINS 1024
+#define AGS false
+#define FREQ 0
+#if AGS
 #define FREQ 10
-//I couldnt be fucked to make my own
+#endif
+//I got bothered, so i made my own
 //complex number library
-void subFFT(Complex arr[], Complex out[], int n, int step){
-  if(step < n){
-    subFFT(out, arr, n, step*2);
+KwikComplex arr[NUM_OF_BINS];
+void subFFT(KwikComplex arr[], KwikComplex out[], unsigned int n, int step) {
+  unsigned int i;
+  if (step < n) {
+    subFFT(out, arr, n, step * 2);
     subFFT(out + step, arr + step, n, step * 2);
   }
-  for(int i = 0; i < n; i += 2 * step){
-    Complex t;
-    t.setReal(1);
-    t.setImag(-1 * PI * i / n);
-    t = t.c_exp();
+  for (i = 0; i < n; i += 2 * step) {
+    KwikComplex t;
+    t.set(1, -1 * PI * i / n);
+    t = t.complexExp();
     t *= out[i + step];
     arr[i / 2] = out[i] + t;
-    arr[(i + n)/2] = out[i] - t;
+    arr[(i + n) / 2] = out[i] - t;
     //r = 1
     //i = 2pikn/N
   }
-
 }
-void FFT(Complex arr[], int n){
-  int i;
-  Complex out[n];
-  for(i = 0; i < n; i++)
+void FFT(KwikComplex arr[], unsigned int n) {
+  unsigned int i;
+  KwikComplex out[n];
+  for (i = 0; i < n; i++)
     out[i] = arr[i];
   subFFT(arr, out, n, 1);
 }
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  //Serial.begin(115200);
 }
-void show(const char * s, Complex buf[]) {
-	Serial.print(s);
-	for (int i = 0; i < 8; i++)
-		if (!buf[i].imag()){
-			Serial.print((double)buf[i].real());
+/*void show(const char* s, KwikComplex buf[]) {
+  Serial.print(s);
+  for (int i = 0; i < 8; i++)
+    if (!buf[i].imag()) {
+      Serial.print((double)buf[i].real());
       Serial.print(" ,");
-    }else{
+    } else {
       Serial.print("(");
-			Serial.print((double)buf[i].real());
+      Serial.print((double)buf[i].real());
       Serial.print(" , ");
       Serial.print((double)buf[i].imag());
       Serial.print("), ");
     }
 }
+*/
 void loop() {
   // put your main code here, to run repeatedly:
-  Complex arr[NUM_OF_BINS];
   //generate sine wave of any frequency relative to the sampling rate
-  double count = 0;
-  double inc = 2 * PI * ((double)FREQ / (double)NUM_OF_BINS);
-  Serial.println(inc);
-  //inc /= (double)NUM_OF_BINS;
-  for(int i = 0; i < NUM_OF_BINS; i++){
+  uint8_t i;
+  if (AGS) {
+    double count = 0;
+    double inc = 2 * PI * ((float)FREQ / (double)NUM_OF_BINS);
+    Serial.println(inc);
+    //inc /= (double)NUM_OF_BINS;
+    for (i = 0; i < NUM_OF_BINS; i++) {
 
-    arr[i].set(sin(count), 0);
-    count += inc;
+      arr[i].set(sin(count), 0);
+      count += inc;
+    }
+  } else {  //no auto generated sinewave :(
   }
+  FFT(arr, NUM_OF_BINS);
   //show("Data: ", arr);
-  for(int i = 0; i < NUM_OF_BINS; i++){
+  /*for (int i = 0; i < NUM_OF_BINS; i++) {
     Serial.print("Marker:");
     Serial.print(i);
     Serial.print(", Data:");
@@ -69,17 +78,16 @@ void loop() {
     delay(10);
   }
   FFT(arr, NUM_OF_BINS);
-  for(int i = 0; i < NUM_OF_BINS; i++){
+  for (int i = 0; i < NUM_OF_BINS; i++) {
     Serial.print("Marker:");
     Serial.print(i);
     Serial.print(", Data:");
     Serial.println(arr[i].real());
     delay(10);
-  }
+  }*/
   //show("\nFFT : ", arr);
-  while(1){
+  while (1) {
     ;
   }
-
-
 }
+//FUCKING NINE BYTES ARE YOU KIDDING ME
