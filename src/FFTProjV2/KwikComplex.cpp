@@ -54,8 +54,10 @@ KwikComplex &KwikComplex::operator/=(const KwikComplex &c) {
 }
 //special funny
 KwikComplex KwikComplex::complexExp() const {
-  double a = exp(re);
-  return KwikComplex(a * cos(im), a * sin(im));
+  //double a = exp(re);
+  //shh this speeds it up
+  //return KwikComplex(a * cos(im), a * sin(im));
+  return KwikComplex(cos(im), sin(im));
 }
 KwikComplex KwikComplex::complexSin() const {
   return KwikComplex(sin(re) * cosh(im), sinh(im) * cos(re));
