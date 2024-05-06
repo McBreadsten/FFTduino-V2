@@ -1,6 +1,5 @@
 #ifndef KwikComplex_h
 #define KwikComplex_h
-
 #include "Arduino.h"
 
 class KwikComplex {
