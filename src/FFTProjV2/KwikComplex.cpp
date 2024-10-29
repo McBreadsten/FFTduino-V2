@@ -3,65 +3,63 @@
 
 //boolean ops
 bool KwikComplex::operator==(const KwikComplex &c) const {
-  return (re == c.re) && (im == c.im);
+  return (real == c.real) && (imag == c.imag);
 }
 bool KwikComplex::operator!=(const KwikComplex &c) const {
-  return (re != c.re) || (im != c.im);  //demorgans law
+  return (real != c.real) || (imag != c.imag);  //demorgans law
 }
 //Math ops
 KwikComplex KwikComplex::operator+(const KwikComplex &c) const {
-  return KwikComplex(re + c.re, im + c.im);
+  return KwikComplex(real + c.real, imag + c.imag);
 }
 KwikComplex KwikComplex::operator-(const KwikComplex &c) const {
-  return KwikComplex(re - c.re, im - c.im);
+  return KwikComplex(real - c.real, imag - c.imag);
 }
 KwikComplex KwikComplex::operator*(const KwikComplex &c) const {
-  double r = re * c.re - im * c.im;
-  double i = re * c.im + im * c.re;
+  double r = real * c.real - imag * c.imag;
+  double i = real * c.imag + imag * c.real;
   return KwikComplex(r, i);
 }
 KwikComplex KwikComplex::operator/(const KwikComplex &c) const {
-  double q = 1.0 / (c.re * c.re + c.im * c.im);
-  double r = (re * c.re + im * c.im) * q;
-  double i = (im * c.re - re * c.im) * q;
+  double q = 1.0 / (c.real * c.real + c.imag * c.imag);
+  double r = (real * c.real + imag * c.imag) * q;
+  double i = (imag * c.real - real * c.imag) * q;
   return KwikComplex(r, i);
 }
 //Self referencing ops
 KwikComplex &KwikComplex::operator+=(const KwikComplex &c) {
-  re += c.re;
-  im += c.im;
+  real += c.real;
+  imag += c.imag;
   return *this;
 }
 KwikComplex &KwikComplex::operator-=(const KwikComplex &c) {
-  re -= c.re;
-  im -= c.im;
+  real -= c.real;
+  imag -= c.imag;
   return *this;
 }
 KwikComplex &KwikComplex::operator*=(const KwikComplex &c) {
-  double r = re * c.re - im * c.im;
-  double i = re * c.im + im * c.re;
-  re = r;
-  im = i;
+  double r = real * c.real - imag * c.imag;
+  double i = real * c.imag + imag * c.real;
+  real = r;
+  imag = i;
   return *this;
 }
 KwikComplex &KwikComplex::operator/=(const KwikComplex &c) {
-  double q = 1.0 / (c.re * c.re + c.im * c.im);
-  double r = (re * c.re + im * c.im) * q;
-  double i = (im * c.re - re * c.im) * q;
-  re = r;
-  im = i;
+  double q = 1.0 / (c.real * c.real + c.imag * c.imag);
+  double r = (real * c.real + imag * c.imag) * q;
+  double i = (imag * c.real - real * c.imag) * q;
+  real = r;
+  imag = i;
   return *this;
 }
 //special funny
 KwikComplex KwikComplex::complexExp() const {
-  //double a = exp(re);
-  //shh this speeds it up
-  //return KwikComplex(a * cos(im), a * sin(im));
-  return KwikComplex(cos(im), sin(im));
+  //double a = exp(real);
+  return KwikComplex(cos(imag), sin(imag));
 }
 KwikComplex KwikComplex::complexSin() const {
-  return KwikComplex(sin(re) * cosh(im), sinh(im) * cos(re));
+  return KwikComplex(sin(real) * cosh(imag), sinh(imag) * cos(real));
 }
 KwikComplex KwikComplex::complexCos() const {
-  return KwikComplex(cos(re) * cosh(im), -1.0 * sin(re) * sinh(im));
+  return KwikComplex(cos(real) * cosh(imag), -1.0 * sin(real) * sinh(imag));
 }
