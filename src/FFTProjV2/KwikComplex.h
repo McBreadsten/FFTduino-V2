@@ -4,12 +4,8 @@
 
 class KwikComplex {
 public:
-  KwikComplex(const double r = 0, const double i = 0)
-    : real(r), imag(i){};
-  KwikComplex(const KwikComplex& c)
-    : real(c.real), imag(c.imag){};
-
-
+  KwikComplex(const double r = 0, const double i = 0) : real(r), imag(i){};
+  KwikComplex(const KwikComplex&num) : real(num.real), imag(num.imag){};
   void set(const double r, const double i) {
     real = r;
     imag = i;
