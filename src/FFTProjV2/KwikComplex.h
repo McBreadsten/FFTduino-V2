@@ -5,26 +5,26 @@
 class KwikComplex {
 public:
   KwikComplex(const double r = 0, const double i = 0)
-    : re(r), im(i){};
+    : real(r), imag(i){};
   KwikComplex(const KwikComplex& c)
-    : re(c.re), im(c.im){};
+    : real(c.real), imag(c.imag){};
 
 
   void set(const double r, const double i) {
-    re = r;
-    im = i;
+    real = r;
+    imag = i;
   };
   void setReal(const double r) {
-    re = r;
+    real = r;
   };
   void setImag(const double i) {
-    im = i;
+    imag = i;
   };
   float real() const {
-    return re;
+    return real;
   };
   float imag() const {
-    return im;
+    return imag;
   };
   //boolean operators
   bool operator==(const KwikComplex&) const;
@@ -45,7 +45,7 @@ public:
   KwikComplex complexCos() const;
 
 private:
-  double re;
-  double im;
+  double real;
+  double imag;
 };
 #endif
