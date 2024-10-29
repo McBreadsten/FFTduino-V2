@@ -2,59 +2,59 @@
 #include "KwikComplex.h"
 
 //boolean ops
-bool KwikComplex::operator==(const KwikComplex &c) const {
-  return (real == c.real) && (imag == c.imag);
+bool KwikComplex::operator==(const KwikComplex &num) const {
+  return (real == num.real) && (imag == num.imag);
 }
-bool KwikComplex::operator!=(const KwikComplex &c) const {
-  return (real != c.real) || (imag != c.imag);  //demorgans law
+bool KwikComplex::operator!=(const KwikComplex &num) const {
+  return (real != num.real) || (imag != num.imag);  //demorgans law
 }
 //Math ops
-KwikComplex KwikComplex::operator+(const KwikComplex &c) const {
-  return KwikComplex(real + c.real, imag + c.imag);
+KwikComplex KwikComplex::operator+(const KwikComplex &num) const {
+  return KwikComplex(real + num.real, imag + num.imag);
 }
-KwikComplex KwikComplex::operator-(const KwikComplex &c) const {
-  return KwikComplex(real - c.real, imag - c.imag);
+KwikComplex KwikComplex::operator-(const KwikComplex &num) const {
+  return KwikComplex(real - num.real, imag - num.imag);
 }
-KwikComplex KwikComplex::operator*(const KwikComplex &c) const {
-  double r = real * c.real - imag * c.imag;
-  double i = real * c.imag + imag * c.real;
+KwikComplex KwikComplex::operator*(const KwikComplex &num) const {
+  double r = real * num.real - imag * num.imag;
+  double i = real * num.imag + imag * num.real;
   return KwikComplex(r, i);
 }
-KwikComplex KwikComplex::operator/(const KwikComplex &c) const {
-  double q = 1.0 / (c.real * c.real + c.imag * c.imag);
-  double r = (real * c.real + imag * c.imag) * q;
-  double i = (imag * c.real - real * c.imag) * q;
+KwikComplex KwikComplex::operator/(const KwikComplex &num) const {
+  double q = 1.0 / (num.real * num.real + num.imag * num.imag);
+  double r = (real * num.real + imag * num.imag) * q;
+  double i = (imag * num.real - real * num.imag) * q;
   return KwikComplex(r, i);
 }
 //Self referencing ops
-KwikComplex &KwikComplex::operator+=(const KwikComplex &c) {
-  real += c.real;
-  imag += c.imag;
+KwikComplex &KwikComplex::operator+=(const KwikComplex &num) {
+  real += num.real;
+  imag += num.imag;
   return *this;
 }
-KwikComplex &KwikComplex::operator-=(const KwikComplex &c) {
-  real -= c.real;
-  imag -= c.imag;
+KwikComplex &KwikComplex::operator-=(const KwikComplex &num) {
+  real -= num.real;
+  imag -= num.imag;
   return *this;
 }
-KwikComplex &KwikComplex::operator*=(const KwikComplex &c) {
-  double r = real * c.real - imag * c.imag;
-  double i = real * c.imag + imag * c.real;
+KwikComplex &KwikComplex::operator*=(const KwikComplex &num) {
+  double r = real * num.real - imag * num.imag;
+  double i = real * num.imag + imag * num.real;
   real = r;
   imag = i;
   return *this;
 }
-KwikComplex &KwikComplex::operator/=(const KwikComplex &c) {
-  double q = 1.0 / (c.real * c.real + c.imag * c.imag);
-  double r = (real * c.real + imag * c.imag) * q;
-  double i = (imag * c.real - real * c.imag) * q;
+KwikComplex &KwikComplex::operator/=(const KwikComplex &num) {
+  double inv = 1.0 / (num.real * num.real + num.imag * num.imag);
+  double r = (real * num.real + imag * num.imag) * inv;
+  double i = (imag * num.real - real * num.imag) * inv;
   real = r;
   imag = i;
   return *this;
 }
 //special funny
 KwikComplex KwikComplex::complexExp() const {
-  //double a = exp(real);
+  //double a = exp(real); outdated idea, used for scaling sin and cos
   return KwikComplex(cos(imag), sin(imag));
 }
 KwikComplex KwikComplex::complexSin() const {
